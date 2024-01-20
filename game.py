@@ -23,11 +23,7 @@ class Game:
         self.game_start_time = time.time()
 
     def spawn_insects(self):
-        t = time.time()
-        if t > self.insects_spawn_timer:
-            self.insects_spawn_timer = t + MOSQUITOS_SPAWN_TIME
-            # increase the probability that the insect will be a bee over time
-            self.insects.append(Mosquito())
+        
 
     def load_camera(self):
         _, self.frame = self.cap.read()
@@ -66,25 +62,6 @@ class Game:
         self.game_time_update()
 
         self.draw()
-
-        if self.time_left > 0:
-            self.spawn_insects()
-            (x, y) = self.hand_tracking.get_hand_center()
-            self.hand.rect.center = (x, y)
-            self.hand.left_click = self.hand_tracking.hand_closed
-            print("Hand closed", self.hand.left_click)
-            if self.hand.left_click:
-                self.hand.image = self.hand.image_smaller.copy()
-            else:
-                self.hand.image = self.hand.orig_image.copy()
-            self.score = self.hand.kill_insects(self.insects, self.score)
-            for insect in self.insects:
-                insect.move()
-
-        else: # when the game is over
-            if ui.button(self.surface, 540, "Game over"):
-                return "game over"
-
-
+        
         cv2.imshow("Frame", self.frame)
         cv2.waitKey(1)
