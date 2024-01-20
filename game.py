@@ -1,31 +1,20 @@
 import pygame
 import time
 import random
-from settings import *
+from helper.settings import *
 from background import Background
 from hand import Hand
-from hand_tracking import HandTracking
+from helper.hand_tracking import HandTracking
 from mosquito import Mosquito
-from bee import Bee
 import cv2
-import ui
+import helper.ui as ui
 
 class Game:
     def __init__(self, surface):
         self.surface = surface
         self.background = Background()
-
         # Load camera
         self.cap = cv2.VideoCapture(0)
-
-        self.sounds = {}
-        self.sounds["slap"] = pygame.mixer.Sound(f"Assets/Sounds/slap.wav")
-        self.sounds["slap"].set_volume(SOUNDS_VOLUME)
-        self.sounds["screaming"] = pygame.mixer.Sound(f"Assets/Sounds/screaming.wav")
-        self.sounds["screaming"].set_volume(SOUNDS_VOLUME)
-
-
-    def reset(self): # reset all the needed variables
         self.hand_tracking = HandTracking()
         self.hand = Hand()
         self.insects = []
@@ -33,26 +22,15 @@ class Game:
         self.score = 0
         self.game_start_time = time.time()
 
-
     def spawn_insects(self):
         t = time.time()
         if t > self.insects_spawn_timer:
             self.insects_spawn_timer = t + MOSQUITOS_SPAWN_TIME
-
             # increase the probability that the insect will be a bee over time
-            nb = (GAME_DURATION-self.time_left)/GAME_DURATION * 100  / 2  # increase from 0 to 50 during all  the game (linear)
-            if random.randint(0, 100) < nb:
-                self.insects.append(Bee())
-            else:
-                self.insects.append(Mosquito())
-
-            # spawn a other mosquito after the half of the game
-            if self.time_left < GAME_DURATION/2:
-                self.insects.append(Mosquito())
+            self.insects.append(Mosquito())
 
     def load_camera(self):
         _, self.frame = self.cap.read()
-
 
     def set_hand_position(self):
         self.frame = self.hand_tracking.scan_hands(self.frame)
@@ -99,13 +77,13 @@ class Game:
                 self.hand.image = self.hand.image_smaller.copy()
             else:
                 self.hand.image = self.hand.orig_image.copy()
-            self.score = self.hand.kill_insects(self.insects, self.score, self.sounds)
+            self.score = self.hand.kill_insects(self.insects, self.score)
             for insect in self.insects:
                 insect.move()
 
         else: # when the game is over
-            if ui.button(self.surface, 540, "Continue", click_sound=self.sounds["slap"]):
-                return "menu"
+            if ui.button(self.surface, 540, "Game over"):
+                return "game over"
 
 
         cv2.imshow("Frame", self.frame)

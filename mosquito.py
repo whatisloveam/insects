@@ -1,8 +1,8 @@
 import pygame
 import random
 import time
-import image
-from settings import *
+import helper.image as image
+from helper.settings import *
 
 class Mosquito:
     def __init__(self):
@@ -15,7 +15,6 @@ class Mosquito:
         self.rect = pygame.Rect(start_pos[0], start_pos[1], size[0]//1.4, size[1]//1.4)
         self.images = [image.load("Assets/mosquito/mosquito.png", size=size, flip=moving_direction=="right")]
         self.current_frame = 0
-        self.animation_timer = 0
 
 
     def define_spawn_pos(self, size): # define the start pos and moving vel of the mosquito
@@ -40,22 +39,12 @@ class Mosquito:
         self.rect.move_ip(self.vel)
 
 
-    def animate(self): # change the frame of the insect when needed
-        t = time.time()
-        if t > self.animation_timer:
-            self.animation_timer = t + ANIMATION_SPEED
-            self.current_frame += 1
-            if self.current_frame > len(self.images)-1:
-                self.current_frame = 0
-
-
     def draw_hitbox(self, surface):
         pygame.draw.rect(surface, (200, 60, 0), self.rect)
 
 
 
     def draw(self, surface):
-        self.animate()
         image.draw(surface, self.images[self.current_frame], self.rect.center, pos_mode="center")
         if DRAW_HITBOX:
             self.draw_hitbox(surface)

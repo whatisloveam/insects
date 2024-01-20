@@ -1,7 +1,7 @@
 import pygame
-import image
-from settings import *
-from hand_tracking import HandTracking
+import helper.image as image
+from helper.settings import *
+from helper.hand_tracking import HandTracking
 import cv2
 
 class Hand:
@@ -36,14 +36,11 @@ class Hand:
         return [insect for insect in insects if self.rect.colliderect(insect.rect)]
 
 
-    def kill_insects(self, insects, score, sounds): # will kill the insects that collide with the hand when the left mouse button is pressed
+    def kill_insects(self, insects, score): # will kill the insects that collide with the hand when the left mouse button is pressed
         if self.left_click: # if left click
             for insect in self.on_insect(insects):
                 insect_score = insect.kill(insects)
                 score += insect_score
-                sounds["slap"].play()
-                if insect_score < 0:
-                    sounds["screaming"].play()
         else:
             self.left_click = False
         return score
