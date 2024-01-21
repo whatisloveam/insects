@@ -62,6 +62,19 @@ class Game:
         self.game_time_update()
 
         self.draw()
+
+        if self.time_left > 0:
+            self.spawn_insects()
+            (x, y) = self.hand_tracking.get_hand_center()
+            self.hand.rect.center = (x, y)
+            self.hand.left_click = self.hand_tracking.hand_closed
+            print("Hand closed", self.hand.left_click)
+            if self.hand.left_click:
+                self.hand.image = self.hand.image_smaller.copy()
+            else:
+                self.hand.image = self.hand.orig_image.copy()
+            for insect in self.insects:
+                insect.move()
         
         cv2.imshow("Frame", self.frame)
         cv2.waitKey(1)
