@@ -23,7 +23,10 @@ class Game:
         self.game_start_time = time.time()
 
     def spawn_insects(self):
-        
+        t = time.time()
+        if t > self.insects_spawn_timer:
+            self.insects_spawn_timer = t + MOSQUITOS_SPAWN_TIME
+            self.insects.append(Mosquito())
 
     def load_camera(self):
         _, self.frame = self.cap.read()
@@ -73,6 +76,7 @@ class Game:
                 self.hand.image = self.hand.image_smaller.copy()
             else:
                 self.hand.image = self.hand.orig_image.copy()
+            self.score = self.hand.kill_insects(self.insects, self.score)
             for insect in self.insects:
                 insect.move()
         
